@@ -278,13 +278,15 @@ docpilot-rag/
 │  ├─ config.py              # 环境配置及校验
 │  ├─ dependencies.py        # 后端装配
 │  ├─ domain.py              # 文档、切片、检索结果模型
-│  ├─ loaders.py             # PDF/TXT/DOCX/CSV 解析
+│  ├─ loaders.py             # PDF/TXT/MD/DOCX/CSV 解析
 │  ├─ text_splitter.py       # 中文友好的递归切分
 │  ├─ embeddings.py          # 哈希与 DashScope Embedding
 │  ├─ vectorstores.py        # 内存与 Milvus 向量库
 │  ├─ llms.py                # 演示回答器与 Qwen
 │  ├─ service.py             # 索引、检索、问答用例
 │  └─ langchain_compat.py    # LangChain 兼容适配
+├─ run_demo.ps1              # Windows 一键启动 Web 工作台
+├─ src/docpilot/static/      # 零构建前端（HTML/CSS/JS）
 ├─ tests/                    # 单元与接口测试
 ├─ examples/                 # 可直接运行的示例资料
 ├─ docs/architecture.md      # 架构与分数约定
@@ -301,13 +303,13 @@ pytest --cov=docpilot --cov-report=term-missing
 ruff check src tests
 ```
 
-当前离线基线：Python 3.12 下 **12 passed，覆盖率 74%**。GitHub Actions 会在 push 和 pull request 时执行测试、覆盖率统计及 Ruff 静态检查。
+当前离线基线：Python 3.12 下 **13 passed**。GitHub Actions 会在 push 和 pull request 时执行测试、覆盖率统计及 Ruff 静态检查。
 
 ## 当前边界
 
 - PDF 使用原生文本提取，不包含扫描件 OCR。
-- 不支持 XLS/XLSX、图片或 Markdown 入库。
-- 未实现 BM25、RRF、Reranker、Agent 编排、会话记忆、SSE 或前端工作台。
+- 不支持 XLS/XLSX 或图片入库；Markdown 按纯文本解析。
+- 该仓库不承诺 BM25、RRF、Reranker、多 Agent、持久化会话或 SSE；Web 工作台提供单轮、来源可解释的本地问答。
 - Demo 模式用于验证工程链路，不代表真实语义检索效果。
 - DashScope 与 Milvus 适配器需要使用者自行提供可用服务和密钥。
 
