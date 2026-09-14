@@ -13,6 +13,11 @@ def client() -> TestClient:
 
 def test_six_api_capabilities() -> None:
     api = client()
+    assert api.get("/").status_code == 200
+    assert api.get("/meta").json()["name"] == "DocPilot"
+    demo = api.post("/demo/seed")
+    assert demo.status_code == 200
+    assert demo.json()["chunks_indexed"] >= 1
     upload = api.post(
         "/upload_file",
         files={"file": ("manual.txt", "RAG 通过检索资料辅助回答。".encode(), "text/plain")},

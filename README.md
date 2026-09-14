@@ -7,17 +7,18 @@ DocPilot 是一个面向学习、作品展示和原型验证的轻量级 RAG 文
 
 项目保留 6 个常用知识库接口，同时增加健康检查、输入校验、来源回传和可重复的离线测试。它适合用来理解一条完整、可运行的 RAG 链路，也便于继续替换模型或存储组件。
 
-> 项目只实现仓库中能够验证的能力，不包含 OCR、BM25/RRF、Reranker、多 Agent、会话记忆、SSE 或前端工作台，也不声称未经测试的性能提升。
+> 项目只实现仓库中能够验证的能力。前端工作台与后端 API 一起提供，默认离线回答器是确定性的演示实现，不会把固定结果伪装成在线大模型。
 
 ## 核心能力
 
-- 支持 PDF、TXT、DOCX、CSV 文档解析；PDF 保留页码，CSV 保留行号。
+- 支持 PDF、TXT、Markdown、DOCX、CSV 文档解析；PDF 保留页码，CSV 保留行号。
 - 默认以 500 字符、50 字符重叠切分，并优先在中文标点或换行处断开。
 - 通过内容 SHA-256 生成稳定文档 ID；相同内容再次入库时执行幂等替换。
 - 支持纯检索与 RAG 问答，统一返回来源切片、原始 L2 距离和相似度分数。
 - 以 `EmbeddingProvider`、`VectorStore`、`AnswerModel` 三类接口隔离核心业务与外部依赖。
 - 提供 LangChain Embeddings、Document 转换和 `invoke` 风格 Retriever 兼容层。
 - 同时提供 CLI、FastAPI、Swagger 文档和 GitHub Actions CI。
+- 内置无需构建工具的本地 Web 工作台：上传资料、提问、查看检索来源和服务状态。
 - 默认限制上传为 20 MiB；远程部署时可关闭服务端本地路径导入。
 - 清空集合必须显式提交 `confirm=true`，降低误操作风险。
 
@@ -96,6 +97,7 @@ uvicorn docpilot.api:app --reload
 
 启动后可访问：
 
+- Web 工作台：<http://127.0.0.1:8000/>
 - Swagger UI：<http://127.0.0.1:8000/docs>
 - ReDoc：<http://127.0.0.1:8000/redoc>
 - 健康检查：<http://127.0.0.1:8000/health>
@@ -111,6 +113,9 @@ uvicorn docpilot.api:app --reload
 | `GET` | `/collection_info` | 查看集合及当前后端信息 |
 | `POST` | `/clear_collection` | 清空集合，需要显式确认 |
 | `GET` | `/health` | 查看服务状态和版本 |
+| `GET` | `/` | 本地 Web 问答工作台 |
+| `GET` | `/meta` | 返回工作台能力和当前后端 |
+| `POST` | `/demo/seed` | 载入可立即提问的演示手册（幂等） |
 
 以下命令使用 `curl`；Windows PowerShell 中建议写成 `curl.exe`。
 

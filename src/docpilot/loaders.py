@@ -6,7 +6,7 @@ from pathlib import Path
 
 from docpilot.domain import LoadedDocument
 
-SUPPORTED_EXTENSIONS = {".pdf", ".txt", ".docx", ".csv"}
+SUPPORTED_EXTENSIONS = {".pdf", ".txt", ".md", ".docx", ".csv"}
 
 
 class UnsupportedDocumentError(ValueError):
@@ -36,8 +36,8 @@ class DocumentLoader:
             raise UnsupportedDocumentError(
                 f"unsupported file type {suffix!r}; expected {supported}"
             )
-        if suffix == ".txt":
-            return [LoadedDocument(_decode_text(content), filename, {"file_type": "txt"})]
+        if suffix in {".txt", ".md"}:
+            return [LoadedDocument(_decode_text(content), filename, {"file_type": suffix[1:]})]
         if suffix == ".csv":
             return self._load_csv(content, filename)
         if suffix == ".docx":

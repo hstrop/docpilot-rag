@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102a43" />
+    <title>DocPilot · 文档智库助手</title>
+    <link rel="stylesheet" href="/assets/app.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="DocPilot 首页">
+          <span class="brand-mark">D</span>
+          <span><strong>DocPilot</strong><small>DOCUMENT INTELLIGENCE</small></span>
+        </a>
+        <div class="topbar-actions">
+          <span class="pill" id="mode-pill"><i class="dot"></i>连接中</span>
+          <a class="ghost-link" href="/docs" target="_blank" rel="noreferrer">API 文档 ↗</a>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div>
+            <p class="eyebrow">LOCAL RAG WORKSPACE</p>
+            <h1>把文档变成<br /><em>可核查的答案。</em></h1>
+            <p class="hero-copy">上传你的资料，DocPilot 会先检索证据，再给出带来源的回答。默认离线运行，适合本地演示和快速验证。</p>
+            <div class="hero-tags"><span>PDF / DOCX / TXT / CSV</span><span>来源可追溯</span><span>无需密钥</span></div>
+          </div>
+          <div class="hero-orbit" aria-hidden="true">
+            <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+            <div class="orbit-core"><span>✦</span><small>RAG</small></div>
+            <span class="orbit-node node-a">文档</span><span class="orbit-node node-b">检索</span><span class="orbit-node node-c">回答</span>
+          </div>
+        </section>
+
+        <section class="workspace-grid">
+          <aside class="sidebar">
+            <div class="panel status-panel">
+              <div class="panel-heading"><span>工作区状态</span><button class="icon-btn" id="refresh-btn" title="刷新">↻</button></div>
+              <div class="status-row"><span><i class="status-light"></i>API 服务</span><b id="api-status">检查中</b></div>
+              <div class="stats"><div><strong id="chunk-count">0</strong><span>已索引切片</span></div><div><strong id="top-k">5</strong><span>默认 Top-K</span></div></div>
+            </div>
+
+            <div class="panel upload-panel">
+              <div class="panel-heading"><span>知识库资料</span><span class="count-badge" id="doc-label">Demo</span></div>
+              <p class="muted">先载入示例资料，或上传自己的文档开始提问。</p>
+              <button class="primary-btn wide" id="seed-btn"><span>✦</span>载入演示知识库</button>
+              <label class="dropzone" id="dropzone">
+                <input id="file-input" type="file" accept=".pdf,.docx,.txt,.csv,.md" />
+                <span class="upload-icon">↑</span><strong>拖入文件或点击上传</strong><small>单文件最大 20 MB</small>
+              </label>
+              <div class="upload-progress" id="upload-progress" hidden><span></span></div>
+              <p class="feedback" id="upload-feedback"></p>
+            </div>
+
+            <div class="panel tips-panel">
+              <div class="panel-heading"><span>试试这样问</span></div>
+              <button class="tip" data-question="代码评审前需要准备什么？">代码评审前需要准备什么？<span>→</span></button>
+              <button class="tip" data-question="接口变更时要同步哪些内容？">接口变更时要同步哪些内容？<span>→</span></button>
+              <button class="tip" data-question="新员工第一个月需要完成什么？">新员工第一个月需要完成什么？<span>→</span></button>
+            </div>
+          </aside>
+
+          <section class="chat-panel">
+            <div class="chat-heading"><div><p class="eyebrow">EVIDENCE-FIRST ASSISTANT</p><h2>文档问答</h2></div><span class="secure-label">⌁ 本地安全模式</span></div>
+            <div class="conversation" id="conversation">
+              <div class="message assistant welcome"><div class="avatar">D</div><div class="bubble"><p>你好，我是 DocPilot。把问题交给我，我会从已索引的文档中寻找依据，并把相关片段展示在答案下方。</p><div class="welcome-note">建议先点击左侧「载入演示知识库」</div></div></div>
+            </div>
+            <div class="typing" id="typing" hidden><span></span><span></span><span></span>正在检索证据…</div>
+            <form class="composer" id="chat-form"><textarea id="question" rows="1" placeholder="向你的文档提问，例如：代码评审前需要准备什么？" autocomplete="off"></textarea><button class="send-btn" type="submit" aria-label="发送">↑</button></form>
+            <div class="composer-hint"><span>Enter 发送 · Shift + Enter 换行</span><span id="provider-label">deterministic-demo</span></div>
+          </section>
+        </section>
+      </main>
+      <footer><span>DocPilot · local-first knowledge assistant</span><span>FastAPI · RAG · 可解释检索</span></footer>
+    </div>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>

@@ -14,6 +14,12 @@ def test_txt_loader_supports_chinese() -> None:
     assert docs[0].text == "向量数据库"
 
 
+def test_markdown_loader_treats_markdown_as_text() -> None:
+    docs = DocumentLoader().load_bytes("# 标题\n\n正文".encode(), "guide.md")
+    assert docs[0].metadata["file_type"] == "md"
+    assert "正文" in docs[0].text
+
+
 def test_csv_loader_keeps_header_names() -> None:
     docs = DocumentLoader().load_bytes("课程,教师\n人工智能,小王\n".encode(), "courses.csv")
     assert len(docs) == 1

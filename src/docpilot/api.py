@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from docpilot import __version__
@@ -32,6 +35,22 @@ class ClearRequest(BaseModel):
     )
 
 
+DEMO_DOCUMENT = """# DocPilot 产品与研发手册
+
+## 代码评审
+研发团队每周三下午进行代码评审。提交评审前，开发者需要补充单元测试，并在合并请求中说明改动范围与验证方式。
+
+## 入职学习
+新员工入职第一个月需要完成信息安全、开发规范和产品基础三门课程。课程完成情况由直属导师在月底确认。
+
+## 文档规范
+内部技术文档应标注维护人和最后更新时间。涉及接口变更时，需要同步更新 API 示例和兼容性说明。
+
+## 会议与协作
+跨团队需求先在项目看板登记，明确负责人、优先级和验收标准，再进入开发排期。
+"""
+
+
 def _container(request: Request) -> Container:
     return request.app.state.container
 
@@ -42,7 +61,47 @@ def create_app(container: Container | None = None) -> FastAPI:
         version=__version__,
         description="PDF/TXT/DOCX/CSV indexing and retrieval API",
     )
-    app.state.container = container or build_container()
+    selected_container = container or build_container()
+    app.state.container = selected_container
+    # A fresh demo process should be useful immediately, even before the
+    # browser bundle has made its first request. Custom containers used by
+    # tests and production deployments are never mutated here.
+    if container is None and selected_container.settings.mode == "demo":
+        selected_container.service.index_bytes(
+            DEMO_DOCUMENT.encode("utf-8"), "docpilot-demo-handbook.txt"
+        )
+
+    static_dir = Path(__file__).parent / "static"
+    assets_dir = static_dir / "assets"
+    app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/", include_in_schema=False)
+    def frontend() -> FileResponse:
+        return FileResponse(static_dir / "index.html")
+
+    @app.get("/meta", tags=["system"])
+    def meta(request: Request) -> dict[str, object]:
+        settings = _container(request).settings
+        return {
+            "name": "DocPilot",
+            "description": "可解释的本地文档问答助手",
+            "mode": settings.mode,
+            "answer_provider": _container(request).service.answer_model.name,
+            "features": ["文档上传", "中文切分", "相似度检索", "来源回传"],
+        }
+
+    @app.post("/demo/seed", tags=["system"])
+    def seed_demo(request: Request) -> dict[str, object]:
+        """写入一份可立即提问的本地示例文档；重复调用是幂等的。"""
+        result = _container(request).service.index_bytes(
+            DEMO_DOCUMENT.encode("utf-8"), "docpilot-demo-handbook.txt"
+        )
+        return {
+            "seeded": True,
+            "document_id": result.document_id,
+            "source": result.source,
+            "chunks_indexed": result.chunks_indexed,
+        }
 
     @app.get("/health", tags=["system"])
     def health() -> dict[str, str]:
