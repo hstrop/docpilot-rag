@@ -1,5 +1,7 @@
 # DocPilot 本地知识库助手
 
+[![CI](https://github.com/hstrop/docpilot-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/hstrop/docpilot-rag/actions/workflows/ci.yml)
+
 DocPilot 是一个面向学习、作品展示和原型验证的轻量级 RAG 文档问答服务。项目将文档解析、文本切分、向量化、相似度检索和基于证据的回答封装为统一的 CLI 与 REST API，并提供两套可切换后端：
 
 - **演示模式**：确定性哈希向量 + 线程安全内存向量库，无需 API Key 或外部服务。
