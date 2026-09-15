@@ -9,6 +9,14 @@ DocPilot 是一个面向学习、作品展示和原型验证的轻量级 RAG 文
 
 > 项目只实现仓库中能够验证的能力。前端工作台与后端 API 一起提供，默认离线回答器是确定性的演示实现，不会把固定结果伪装成在线大模型。
 
+## Global AI/LLM Internship Portfolio
+
+DocPilot is the evidence-first RAG project in my portfolio. It demonstrates a complete, testable path from document ingestion to cited retrieval results, with a clean adapter boundary for replacing the deterministic demo components with hosted embeddings, LLMs, and Milvus.
+
+**Engineering signals:** Python · FastAPI · RAG · PDF/DOCX/CSV parsing · vector-store interfaces · source citation · offline-first testing · GitHub Actions.
+
+**Verified locally:** 13 automated tests pass, including API validation, indexing, retrieval, source traceability, and collection clearing. The default demo needs no API key or external service.
+
 ## 核心能力
 
 - 支持 PDF、TXT、Markdown、DOCX、CSV 文档解析；PDF 保留页码，CSV 保留行号。

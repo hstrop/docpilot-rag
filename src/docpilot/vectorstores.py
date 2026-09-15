@@ -64,9 +64,11 @@ class InMemoryVectorStore:
     def info(self) -> dict[str, object]:
         with self._lock:
             count = len(self._items)
+            document_count = len({chunk.document_id for chunk, _ in self._items.values()})
         return {
             "collection_name": self.collection_name,
             "entity_count": count,
+            "document_count": document_count,
             "backend": self.name,
             "metric_type": "L2",
             "dimension": self.dimension,

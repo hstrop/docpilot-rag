@@ -43,6 +43,7 @@ def test_six_api_capabilities() -> None:
     info = api.get("/collection_info")
     assert info.status_code == 200
     assert info.json()["metric_type"] == "L2"
+    assert info.json()["document_count"] >= 1
 
     rejected = api.post("/clear_collection", json={"confirm": False})
     assert rejected.status_code == 400

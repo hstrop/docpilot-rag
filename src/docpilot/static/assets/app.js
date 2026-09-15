@@ -102,7 +102,38 @@ async function upload(file) {
   finally { $("#upload-progress").hidden = true; state.busy = false; $("#file-input").value = ""; }
 }
 
-$("#seed-btn").addEventListener("click", seedDemo); $("#refresh-btn").addEventListener("click", refreshStatus);
+async function clearCollection() {
+  if (state.busy || !window.confirm("确认清空当前知识库吗？此操作会删除已索引切片。")) return;
+  state.busy = true;
+  try {
+    await api("/clear_collection", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirm: true }) });
+    setFeedback("知识库已清空，可以重新上传资料。", false);
+    await refreshStatus();
+  } catch (error) { setFeedback(error.message, true); }
+  finally { state.busy = false; }
+}
+
+function mountWorkspaceActions() {
+  const heading = document.querySelector(".upload-panel .panel-heading");
+  if (!heading || document.querySelector("#clear-collection")) return;
+  const actions = document.createElement("div");
+  actions.className = "panel-heading-actions";
+  const label = document.createElement("span");
+  label.textContent = "LOCAL";
+  label.className = "count-badge";
+  const clear = document.createElement("button");
+  clear.id = "clear-collection";
+  clear.className = "clear-action";
+  clear.type = "button";
+  clear.textContent = "清空";
+  clear.addEventListener("click", clearCollection);
+  actions.append(label, clear);
+  const existingBadge = heading.querySelector(".count-badge");
+  if (existingBadge) existingBadge.remove();
+  heading.appendChild(actions);
+}
+
+mountWorkspaceActions(); $("#seed-btn").addEventListener("click", seedDemo); $("#refresh-btn").addEventListener("click", refreshStatus);
 $("#file-input").addEventListener("change", (event) => upload(event.target.files[0]));
 $("#dropzone").addEventListener("dragover", (event) => { event.preventDefault(); $("#dropzone").classList.add("drag"); });
 $("#dropzone").addEventListener("dragleave", () => $("#dropzone").classList.remove("drag"));
