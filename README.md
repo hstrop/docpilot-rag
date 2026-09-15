@@ -321,6 +321,17 @@ ruff check src tests
 - Demo 模式用于验证工程链路，不代表真实语义检索效果。
 - DashScope 与 Milvus 适配器需要使用者自行提供可用服务和密钥。
 
+## Container deployment
+
+The default Docker image runs the deterministic demo on port `8000` and does not need an API key:
+
+```powershell
+docker build -t docpilot-rag .
+docker run --rm -p 8000:8000 docpilot-rag
+```
+
+The optional Milvus stack remains available through `docker-compose.yml`; it is intentionally separate from the lightweight demo image.
+
 ## License
 
 [MIT](LICENSE)
